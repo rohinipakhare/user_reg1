@@ -1,7 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse,HttpResponseRedirect
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate,login,logout
 from django.urls import reverse
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
@@ -58,3 +59,17 @@ def user_login(request):
             return HttpResponse('Invalid Credential')
         
     return render(request,'user_login.html')
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('home'))
+
+
+@login_required
+def profile_display(request):
+    un=request.session.get('username')
+    UO=User.objects.get(username=un)
+    PO=Profile.objects.get(username=UO)
+    d={'UO':UO,'PO':PO}
+    return render(request,'profile_display.html',d)
